@@ -36,40 +36,81 @@ document.addEventListener('DOMContentLoaded', () => {
     columnsContainer.innerHTML = ''; // Clear previous content
     tableDescription.value = ''; // Clear description
 
-    if (mockEmployeeData.length === 0) return;
+    chrome.storage.local.get('parsedTableData', (result) => {
+      let tableData = result.parsedTableData;
 
-    const headers = Object.keys(mockEmployeeData[0]);
+      if (Array.isArray(tableData) && tableData.length > 0) {
+        const headers = tableData[0];
+        const rows = tableData.slice(1);
 
-    headers.forEach((header, index) => {
-      columnHistories[header] = {
-        history: [''],
-        index: 0
-      };
-      const rowDiv = document.createElement('div');
-      rowDiv.className = 'column-row';
-      rowDiv.dataset.columnName = header;
+        headers.forEach((header, index) => {
+          columnHistories[header] = {
+            history: [''],
+            index: 0
+          };
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'column-row';
+          rowDiv.dataset.columnName = header;
 
-      const values = mockEmployeeData.map(row => row[header]).join('\n');
+          const values = rows.map(row => row[index]).join('\n');
 
-      rowDiv.innerHTML = `
-        <div class="column-number">${index + 1}</div>
-        <div class="column-name"><b>${header}</b></div>
-        <div class="column-values">${values}</div>
-        <div class="column-description">
-          <textarea placeholder="Введите точное описание или задайте контекст поля..."></textarea>
-          <div class="description-actions">
-            <input type="checkbox" id="exact-description-${header}" class="exact-description-checkbox">
-            <label for="exact-description-${header}">Точное описание</label>
-            <button class="revert-btn">revert</button>
-            <button class="forward-btn">forward</button>
-          </div>
-        </div>
-        <div class="column-actions">
-          <button class="like-btn">👍</button>
-          <button class="dislike-btn">👎</button>
-        </div>
-      `;
-      columnsContainer.appendChild(rowDiv);
+          rowDiv.innerHTML = `
+            <div class="column-number">${index + 1}</div>
+            <div class="column-name"><b>${header}</b></div>
+            <div class="column-values">${values}</div>
+            <div class="column-description">
+              <textarea placeholder="Введите точное описание или задайте контекст поля..."></textarea>
+              <div class="description-actions">
+                <input type="checkbox" id="exact-description-${header}" class="exact-description-checkbox">
+                <label for="exact-description-${header}">Точное описание</label>
+                <button class="revert-btn">revert</button>
+                <button class="forward-btn">forward</button>
+              </div>
+            </div>
+            <div class="column-actions">
+              <button class="like-btn">👍</button>
+              <button class="dislike-btn">👎</button>
+            </div>
+          `;
+          columnsContainer.appendChild(rowDiv);
+        });
+      } else {
+        if (mockEmployeeData.length === 0) return;
+
+        const headers = Object.keys(mockEmployeeData[0]);
+
+        headers.forEach((header, index) => {
+          columnHistories[header] = {
+            history: [''],
+            index: 0
+          };
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'column-row';
+          rowDiv.dataset.columnName = header;
+
+          const values = mockEmployeeData.map(row => row[header]).join('\n');
+
+          rowDiv.innerHTML = `
+            <div class="column-number">${index + 1}</div>
+            <div class="column-name"><b>${header}</b></div>
+            <div class="column-values">${values}</div>
+            <div class="column-description">
+              <textarea placeholder="Введите точное описание или задайте контекст поля..."></textarea>
+              <div class="description-actions">
+                <input type="checkbox" id="exact-description-${header}" class="exact-description-checkbox">
+                <label for="exact-description-${header}">Точное описание</label>
+                <button class="revert-btn">revert</button>
+                <button class="forward-btn">forward</button>
+              </div>
+            </div>
+            <div class="column-actions">
+              <button class="like-btn">👍</button>
+              <button class="dislike-btn">👎</button>
+            </div>
+          `;
+          columnsContainer.appendChild(rowDiv);
+        });
+      }
     });
   });
 

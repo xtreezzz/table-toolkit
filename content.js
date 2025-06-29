@@ -29,14 +29,27 @@
 
   // Parse table data inside container and store it
   function extractTableData(container) {
+    let data = [];
+
     const table = container.querySelector('table');
-    if (!table) {
+    if (table) {
+      data = Array.from(table.rows).map(row =>
+        Array.from(row.cells).map(cell => cell.innerText.trim())
+      );
+    } else {
+      const rows = container.querySelectorAll('[data-output-table="row"]');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('[data-output-table="cell"]');
+        const rowData = Array.from(cells).map(cell => cell.textContent.trim());
+        data.push(rowData);
+      });
+    }
+
+    if (data.length === 0) {
       console.log('Table Toolkit: no table found in container');
       return;
     }
-    const data = Array.from(table.rows).map(row =>
-      Array.from(row.cells).map(cell => cell.innerText)
-    );
+
     chrome.storage.local.set({ parsedTableData: data }, () => {
       console.log('Table Toolkit: table data saved', data);
     });
