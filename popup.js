@@ -36,8 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
     columnsContainer.innerHTML = ''; // Clear previous content
     tableDescription.value = ''; // Clear description
 
-    chrome.storage.local.get('parsedTableData', (result) => {
-      let tableData = result.parsedTableData;
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (!tabs[0]) return;
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'extractTableData' }, (response) => {
+        let tableData = response && Array.isArray(response.data) ? response.data : null;
 
       if (Array.isArray(tableData) && tableData.length > 0) {
         const headers = tableData[0];
@@ -111,7 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
           columnsContainer.appendChild(rowDiv);
         });
       }
+
     });
+  });
   });
 
   describeDataButton.addEventListener('click', () => {
