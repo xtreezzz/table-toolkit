@@ -1,59 +1,65 @@
 (function() {
   function extractTableData(depth = Infinity) {
-    let limit = typeof depth === 'number' ? depth : Infinity;
-    console.log('extractTableData invoked with limit:', limit);
-    let data = [];
+    const limit = typeof depth === 'number' ? depth : Infinity;
+    const result = { headers: [], data: [] };
 
-    const containerSelector =
-      'div[data-qa-type="paragraph-output-tabls"], div[class^="_paragraphOutputTab_"], div[data-testid="output-content"]';
-    console.log('Searching containers using selector:', containerSelector);
+    const container = document.querySelector(
+      'div[data-testid="output-content"], div[data-qa-type="paragraph-output-tabls"], div[class^="_paragraphOutputTab_"]'
+    );
 
-    const table = document.querySelector(`${containerSelector} table`);
-    if (table) {
-      console.log('Found HTML <table> with', table.rows.length, 'rows');
+    if (!container) {
+      console.log('Table container not found');
+      return [result.headers, ...result.data];
     }
 
+    console.log('Table container found');
 
+    const table = container.querySelector('table');
     if (table) {
-      data = Array.from(table.rows)
-        .slice(0, limit)
-        .map(row => Array.from(row.cells).map(cell => cell.innerText.trim()));
-    } else {
-      const container = document.querySelector(containerSelector);
-      if (!container) {
-        console.warn('No table container found');
-        return data;
+      console.log('Native table detected');
+      const headerRow = table.querySelector('thead tr') || table.rows[0];
+      if (headerRow) {
+        result.headers = Array.from(headerRow.cells)
+          .slice(1)
+          .map(cell => cell.innerText.trim());
+        console.log('Headers:', result.headers);
       }
-      console.log('Container found, searching for custom table rows');
+
+      const rows = Array.from(table.querySelectorAll('tbody tr'));
+      rows.slice(0, limit).forEach(row => {
+        const cells = Array.from(row.cells)
+          .slice(1)
+          .map(cell => cell.innerText.trim());
+        result.data.push(cells);
+      });
+      console.log('Rows collected:', result.data.length);
+    } else {
+      console.log('Native table not found, scanning custom output rows');
 
       const headerRow = container.querySelector('[data-output-table="table-header"]');
       if (headerRow) {
-        console.log('Header row detected');
-
-        const headerCells = headerRow.querySelectorAll('[data-output-table="cell"]');
-        const headers = Array.from(headerCells)
+        const headerCells = headerRow.querySelectorAll('[data-output-table="cell"], [class^="_tableCellContentHeader_"]');
+        result.headers = Array.from(headerCells)
           .slice(1)
           .map(el => el.textContent.trim());
-        data.push(headers);
+        console.log('Headers:', result.headers);
       } else {
-        console.log('No custom header row found');
+        console.log('Header row not found');
       }
 
       const rows = container.querySelectorAll('[data-output-table="row"]');
-      console.log('Found', rows.length, 'custom data rows');
-
       rows.forEach((row, index) => {
         if (index >= limit) return;
-        const cells = row.querySelectorAll('[data-output-table="cell"]');
+        const cells = row.querySelectorAll('[data-output-table="cell"], [class^="_tableCellContent_"]');
         const rowData = Array.from(cells)
           .slice(1)
-          .map(cell => cell.textContent.trim());
-        data.push(rowData);
+          .map(el => el.textContent.trim());
+        result.data.push(rowData);
       });
+      console.log('Rows collected:', result.data.length);
     }
-    console.log('Extraction result length:', data.length);
 
-    return data;
+    return [result.headers, ...result.data];
   }
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
