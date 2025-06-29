@@ -13,6 +13,7 @@
       console.log('Found HTML <table> with', table.rows.length, 'rows');
     }
 
+
     if (table) {
       data = Array.from(table.rows)
         .slice(0, limit)
@@ -28,6 +29,7 @@
       const headerRow = container.querySelector('[data-output-table="table-header"]');
       if (headerRow) {
         console.log('Header row detected');
+
         const headerCells = headerRow.querySelectorAll('[data-output-table="cell"]');
         const headers = Array.from(headerCells)
           .slice(1)
@@ -39,6 +41,7 @@
 
       const rows = container.querySelectorAll('[data-output-table="row"]');
       console.log('Found', rows.length, 'custom data rows');
+
       rows.forEach((row, index) => {
         if (index >= limit) return;
         const cells = row.querySelectorAll('[data-output-table="cell"]');
@@ -49,6 +52,7 @@
       });
     }
     console.log('Extraction result length:', data.length);
+
     return data;
   }
 
