@@ -117,17 +117,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (!tabs[0]) return;
+      const tabId = tabs[0].id;
       const rawDepth = parseInt(depthInput.value, 10);
       const depth = Math.min(100, Math.max(1, isNaN(rawDepth) ? 4 : rawDepth));
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'extractTableData', depth }, (response) => {
+
+      const sendRequest = () => {
+        console.log('Sending extractTableData request with depth', depth);
+        chrome.tabs.sendMessage(tabId, { action: 'extractTableData', depth }, (response) => {
+          if (chrome.runtime.lastError) {
+            console.warn('First sendMessage failed:', chrome.runtime.lastError.message);
+            chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] }, () => {
+              if (chrome.runtime.lastError) {
+                console.error('Script injection failed:', chrome.runtime.lastError.message);
+                alert('Не удалось подключиться к странице. Попробуйте обновить вкладку.');
+                return;
+              }
+              console.log('Injected content script, retrying sendMessage');
+              chrome.tabs.sendMessage(tabId, { action: 'extractTableData', depth }, finalHandler);
+            });
+            return;
+          }
+          finalHandler(response);
+        });
+      };
+
+      const finalHandler = (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('SendMessage failed:', chrome.runtime.lastError.message);
+          alert('Не удалось подключиться к странице. Попробуйте обновить вкладку.');
+          return;
+        }
+
         const tableData = response && Array.isArray(response.data) ? response.data : null;
+        console.log('Received response data length:', tableData ? tableData.length : 'null');
 
         if (Array.isArray(tableData) && tableData.length > 0) {
           populateTableData(tableData);
         } else {
           alert('Не удалось найти таблицу на странице');
         }
-      });
+      };
+
+      sendRequest();
     });
   });
 
