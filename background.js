@@ -10,8 +10,11 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
 });
 
 // Listen for messages from content scripts
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.action === 'openPopup') {
-    chrome.action.openPopup();
+    const tabId = sender.tab ? sender.tab.id : undefined;
+    chrome.action
+      .openPopup({ tabId })
+      .catch(err => console.error('Failed to open popup', err));
   }
 });

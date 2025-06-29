@@ -11,6 +11,53 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   let columnHistories = {};
 
+  function renderColumns(headers, rows) {
+    columnsContainer.innerHTML = '';
+    tableDescription.value = '';
+    columnHistories = {};
+
+    headers.forEach((header, index) => {
+      columnHistories[header] = { history: [''], index: 0 };
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'column-row';
+      rowDiv.dataset.columnName = header;
+
+      const values = rows.map(row => row[index]).join('\n');
+
+      rowDiv.innerHTML = `
+        <div class="column-number">${index + 1}</div>
+        <div class="column-name"><b>${header}</b></div>
+        <div class="column-values">${values}</div>
+        <div class="column-description">
+          <textarea placeholder="Введите точное описание или задайте контекст поля..."></textarea>
+          <div class="description-actions">
+            <input type="checkbox" id="exact-description-${header}" class="exact-description-checkbox">
+            <label for="exact-description-${header}">Точное описание</label>
+            <button class="revert-btn">revert</button>
+            <button class="forward-btn">forward</button>
+          </div>
+        </div>
+        <div class="column-actions">
+          <button class="like-btn">👍</button>
+          <button class="dislike-btn">👎</button>
+        </div>`;
+      columnsContainer.appendChild(rowDiv);
+    });
+  }
+
+  function loadTableData() {
+    chrome.storage.local.get('parsedTableData', (result) => {
+      const tableData = result.parsedTableData;
+      if (Array.isArray(tableData) && tableData.length > 0) {
+        renderColumns(tableData[0], tableData.slice(1));
+      } else if (mockEmployeeData.length > 0) {
+        const headers = Object.keys(mockEmployeeData[0]);
+        const rows = mockEmployeeData.map(row => headers.map(h => row[h]));
+        renderColumns(headers, rows);
+      }
+    });
+  }
+
   // --- Mock Data ---
   const mockEmployeeData = [
     { "employee_id": 101, "name": "Alice Smith", "department": "Sales", "hire_date": "2019-03-15", "salary": 70000, "performance_score": 4.5, "bonus_eligibility": true },
@@ -32,87 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Event Listeners ---
 
-  getDataButton.addEventListener('click', () => {
-    columnsContainer.innerHTML = ''; // Clear previous content
-    tableDescription.value = ''; // Clear description
-
-    chrome.storage.local.get('parsedTableData', (result) => {
-      let tableData = result.parsedTableData;
-
-      if (Array.isArray(tableData) && tableData.length > 0) {
-        const headers = tableData[0];
-        const rows = tableData.slice(1);
-
-        headers.forEach((header, index) => {
-          columnHistories[header] = {
-            history: [''],
-            index: 0
-          };
-          const rowDiv = document.createElement('div');
-          rowDiv.className = 'column-row';
-          rowDiv.dataset.columnName = header;
-
-          const values = rows.map(row => row[index]).join('\n');
-
-          rowDiv.innerHTML = `
-            <div class="column-number">${index + 1}</div>
-            <div class="column-name"><b>${header}</b></div>
-            <div class="column-values">${values}</div>
-            <div class="column-description">
-              <textarea placeholder="Введите точное описание или задайте контекст поля..."></textarea>
-              <div class="description-actions">
-                <input type="checkbox" id="exact-description-${header}" class="exact-description-checkbox">
-                <label for="exact-description-${header}">Точное описание</label>
-                <button class="revert-btn">revert</button>
-                <button class="forward-btn">forward</button>
-              </div>
-            </div>
-            <div class="column-actions">
-              <button class="like-btn">👍</button>
-              <button class="dislike-btn">👎</button>
-            </div>
-          `;
-          columnsContainer.appendChild(rowDiv);
-        });
-      } else {
-        if (mockEmployeeData.length === 0) return;
-
-        const headers = Object.keys(mockEmployeeData[0]);
-
-        headers.forEach((header, index) => {
-          columnHistories[header] = {
-            history: [''],
-            index: 0
-          };
-          const rowDiv = document.createElement('div');
-          rowDiv.className = 'column-row';
-          rowDiv.dataset.columnName = header;
-
-          const values = mockEmployeeData.map(row => row[header]).join('\n');
-
-          rowDiv.innerHTML = `
-            <div class="column-number">${index + 1}</div>
-            <div class="column-name"><b>${header}</b></div>
-            <div class="column-values">${values}</div>
-            <div class="column-description">
-              <textarea placeholder="Введите точное описание или задайте контекст поля..."></textarea>
-              <div class="description-actions">
-                <input type="checkbox" id="exact-description-${header}" class="exact-description-checkbox">
-                <label for="exact-description-${header}">Точное описание</label>
-                <button class="revert-btn">revert</button>
-                <button class="forward-btn">forward</button>
-              </div>
-            </div>
-            <div class="column-actions">
-              <button class="like-btn">👍</button>
-              <button class="dislike-btn">👎</button>
-            </div>
-          `;
-          columnsContainer.appendChild(rowDiv);
-        });
-      }
-    });
-  });
+  getDataButton.addEventListener('click', loadTableData);
 
   describeDataButton.addEventListener('click', () => {
     const newDescription = mockDescriptions.table_description;
@@ -212,5 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
       historyData.index++;
     }
   });
+
+  // Populate columns immediately when the popup opens
+  loadTableData();
 
 });
