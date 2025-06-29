@@ -69,3 +69,11 @@ chrome.declarativeNetRequest.onRuleMatched.addListener((rule) => {
 
 Дополнительные настройки разрешений описаны в `rules.json`. Этот файл содержит правила для `declarativeNetRequest`, которые определяют, какие сетевые запросы будут перехватываться фоновым скриптом.
 
+### `content.js`
+
+Контент-скрипт добавляет интерактивную кнопку к любому элементу вида
+`div[class^="_paragraphOutputTab_"]` или `div[data-qa-type="paragraph-output-tabls"]`.
+При наведении курсора на такой блок появляется кнопка **"Забрать данные"**,
+которая извлекает содержимое расположенной в нём HTML-таблицы и сохраняет его в
+`chrome.storage.local` под ключом `parsedTableData`.
+
