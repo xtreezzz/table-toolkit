@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (!tabs[0]) return;
+      const tabId = tabs[0].id;
       const rawDepth = parseInt(depthInput.value, 10);
       const depth = Math.min(100, Math.max(1, isNaN(rawDepth) ? 4 : rawDepth));
       console.log('Requesting table data with depth', depth);
@@ -124,12 +125,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const tableData = response && Array.isArray(response.data) ? response.data : null;
         console.log('Response received:', tableData);
 
+
         if (Array.isArray(tableData) && tableData.length > 0) {
           populateTableData(tableData);
         } else {
           alert('Не удалось найти таблицу на странице');
         }
-      });
+      };
+
+      sendRequest();
     });
   });
 
