@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Zeppelin Data Wiki</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <h1>Zeppelin Data Wiki</h1>
+  <div class="actions">
+    <button id="get-data">Забрать данные</button>
+    <button id="describe-data">Описать</button>
+  </div>
+
+  <div class="wiki-container">
+      <div class="table-description-section">
+        <h2>Table Description</h2>
+        <div class="description-container">
+          <textarea id="table-description" placeholder="Введите точное описание или задайте контекст таблицы..."></textarea>
+          <div class="description-actions">
+            <input type="checkbox" id="exact-description-checkbox">
+            <label for="exact-description-checkbox">Точное описание</label>
+            <button class="revert-btn" id="revert-table-description">revert</button>
+            <button class="forward-btn" id="forward-table-description">forward</button>
+          </div>
+        </div>
+        <div class="table-actions">
+          <button class="like-btn" id="like-table-description">👍</button>
+          <button class="dislike-btn" id="dislike-table-description">👎</button>
+        </div>
+      </div>
+
+
+    <div class="columns-section">
+      <h2>Columns</h2>
+      <div id="columns-container">
+        <!-- Rows for columns will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <button id="send-to-wiki">Send to Wiki</button>
+
+  <script src="popup.js"></script>
+</body>
+</html>

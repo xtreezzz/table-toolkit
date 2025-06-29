@@ -1,0 +1,138 @@
+/* General Body Styles */
+body {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Menlo', 'Consolas', 'Courier New', monospace;
+  width: 600px; /* Increased width for the new layout */
+  padding: 15px;
+  border: 1px solid #333;
+}
+
+/* Header and Section Titles */
+h1 {
+  color: #569cd6;
+  font-size: 22px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+  margin-top: 0;
+}
+
+h2 {
+  color: #4ec9b0;
+  font-size: 18px;
+  margin-top: 20px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+}
+
+/* Action Buttons Container */
+.actions {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  margin-bottom: 20px;
+}
+
+/* Button Styles */
+button {
+  background-color: #569cd6;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: inherit;
+  transition: background-color 0.2s;
+  flex-grow: 1; /* Make buttons grow to fill space */
+}
+
+button:hover {
+  background-color: #408ac9;
+}
+
+#send-to-wiki {
+  margin-top: 20px;
+  background-color: #c586c0;
+}
+
+/* Wiki-like Layout */
+.wiki-container {
+  border-top: 1px solid #333;
+  padding-top: 10px;
+}
+
+#table-description {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #252526;
+  border: 1px solid #333;
+  color: #d4d4d4;
+  padding: 8px;
+  border-radius: 4px;
+  font-family: inherit;
+  height: 80px;
+  resize: vertical;
+}
+
+/* Column Rows Styling */
+.column-row {
+  display: grid;
+  grid-template-columns: 30px 120px 1fr 2fr 100px; /* No., Name, Values, Desc, Actions */
+  gap: 15px;
+  padding: 15px;
+  border-bottom: 1px solid #3c3c3c;
+  align-items: start;
+}
+
+.column-number {
+  color: #858585; /* Dim color for the number */
+  font-size: 14px;
+  text-align: right;
+}
+
+.column-name b {
+  color: #9cdcfe;
+  font-size: 14px;
+}
+
+.column-values {
+  background-color: #1e1e1e;
+  padding: 10px;
+  border-radius: 3px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 100px; /* Prevent very long value lists */
+  overflow-y: auto;
+}
+
+.column-description textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #252526;
+  border: 1px solid #333;
+  color: #d4d4d4;
+  padding: 8px;
+  border-radius: 4px;
+  font-family: inherit;
+  height: 80px;
+  resize: vertical;
+}
+
+.column-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.like-btn {
+  background-color: transparent;
+  border: 1px solid #569cd6;
+  color: #569cd6;
+  padding: 5px;
+  font-size: 12px;
+}
+
+.like-btn:hover {
+  background-color: #569cd6;
+  color: white;
+}
