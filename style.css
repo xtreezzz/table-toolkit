@@ -136,3 +136,16 @@ button:hover {
   background-color: #569cd6;
   color: white;
 }
+
+.dislike-btn {
+  background-color: transparent;
+  border: 1px solid #d16969;
+  color: #d16969;
+  padding: 5px;
+  font-size: 12px;
+}
+
+.dislike-btn:hover {
+  background-color: #d16969;
+  color: white;
+}
