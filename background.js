@@ -8,3 +8,10 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
       .catch(err => console.error('Fetch failed', err));
   }
 });
+
+// Listen for messages from content scripts
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'openPopup') {
+    chrome.action.openPopup();
+  }
+});

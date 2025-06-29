@@ -58,6 +58,8 @@
   hoverButton.addEventListener('click', () => {
     if (currentContainer) {
       extractTableData(currentContainer);
+      // Request to open the extension popup
+      chrome.runtime.sendMessage({ action: 'openPopup' });
     }
   });
 
