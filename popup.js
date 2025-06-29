@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const getDataButton = document.getElementById('get-data');
+  const depthInput = document.getElementById('depth-input');
   const loadMockButton = document.getElementById('load-mock-data');
   const describeDataButton = document.getElementById('describe-data');
   const tableDescription = document.getElementById('table-description');
@@ -116,7 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (!tabs[0]) return;
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'extractTableData' }, (response) => {
+      const rawDepth = parseInt(depthInput.value, 10);
+      const depth = Math.min(100, Math.max(1, isNaN(rawDepth) ? 4 : rawDepth));
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'extractTableData', depth }, (response) => {
         const tableData = response && Array.isArray(response.data) ? response.data : null;
 
         if (Array.isArray(tableData) && tableData.length > 0) {
