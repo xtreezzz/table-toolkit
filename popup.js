@@ -119,8 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!tabs[0]) return;
       const rawDepth = parseInt(depthInput.value, 10);
       const depth = Math.min(100, Math.max(1, isNaN(rawDepth) ? 4 : rawDepth));
+      console.log('Requesting table data with depth', depth);
       chrome.tabs.sendMessage(tabs[0].id, { action: 'extractTableData', depth }, (response) => {
         const tableData = response && Array.isArray(response.data) ? response.data : null;
+        console.log('Response received:', tableData);
 
         if (Array.isArray(tableData) && tableData.length > 0) {
           populateTableData(tableData);
