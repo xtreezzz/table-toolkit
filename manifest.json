@@ -5,11 +5,20 @@
   "description": "Captures data from Zeppelin API, sends to an external API for description, and allows editing and sending to a wiki.",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "declarative_net_request": {
+    "rule_resources": [{ "id": "rules", "enabled": true, "path": "rules.json" }]
+  },
   "action": {
     "default_popup": "popup.html"
   }
